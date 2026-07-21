@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz interactivo - Liquidez y rentabilidad</title>
+<style>
+:root{
+  --azul:#0057B8;
+  --azul-claro:#EAF3FF;
+  --azul-medio:#8CC4FF;
+  --negro:#111111;
+  --gris:#f4f4f4;
+  --borde:#d8d8d8;
+  --ok:#2e7d32;
+  --error:#b00020;
+  --advertencia:#fff4d6;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--gris);font-family:Arial,Helvetica,sans-serif;color:var(--negro)}
+.wrap{max-width:920px;margin:0 auto;background:#fff;border:1px solid #e1e1e1;overflow:hidden}
+.hero{background:var(--negro);padding:28px 30px 24px;border-bottom:14px solid var(--azul);color:#fff}
+.hero .eyebrow{margin:0 0 10px;font-size:13px;letter-spacing:4px;color:var(--azul-medio);font-weight:800;text-transform:uppercase}
+.hero h1{margin:0;font-family:Georgia,'Times New Roman',serif;font-size:44px;line-height:1.04;color:#fff;font-weight:700;letter-spacing:-1px}
+.hero .sub{margin:14px 0 0;font-size:19px;line-height:1.35;color:#fff}
+.intro{padding:24px 30px 8px}
+.intro-grid{display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:start}
+.intro h2{margin:0 0 8px;font-size:22px;line-height:1.2;font-weight:800}
+.intro p{margin:0;font-size:16px;line-height:1.55;color:#333}
+.instruccion{background:var(--azul);padding:16px;border-radius:12px;color:#fff}
+.instruccion .label{margin:0 0 6px;font-size:12px;letter-spacing:2px;font-weight:800;text-transform:uppercase;color:#fff}
+.instruccion p,.instruccion strong{color:#fff}
+.progress-wrap{padding:12px 30px 0}
+.progress-bg{background:#eee;height:12px;border-radius:20px;overflow:hidden}
+.progress{width:12.5%;height:12px;background:var(--azul);transition:width .25s ease}
+.contador{margin:8px 0 0;font-size:13px;letter-spacing:2px;text-transform:uppercase;font-weight:800;color:#555}
+.quiz-area{padding:18px 30px 30px}
+.card{border:1px solid var(--borde);border-radius:18px;overflow:hidden;background:#fff}
+.card-inner{padding:22px;border-top:12px solid var(--azul)}
+.question-head{display:grid;grid-template-columns:58px 1fr;gap:0}
+.numero{width:46px;height:46px;border:2px solid var(--negro);border-radius:50%;text-align:center;line-height:46px;font-size:18px;font-weight:800}
+.meta{margin:0 0 6px;color:#555;font-size:13px;letter-spacing:2px;text-transform:uppercase;font-weight:800}
+.question-title{margin:0;font-size:25px;line-height:1.2;font-weight:800}
+.icon{float:right;margin-left:8px}
+.options{margin-top:18px}
+.option{display:block;width:100%;text-align:left;margin:8px 0;padding:14px 16px;background:#fff;border:1px solid var(--borde);border-radius:12px;font-size:16px;line-height:1.35;cursor:pointer;transition:background .15s,border-color .15s}
+.option:hover{background:var(--azul-claro);border-color:var(--azul)}
+.option:disabled{cursor:default;opacity:.78}
+.feedback{display:none;margin-top:16px;padding:14px;border-radius:10px;font-size:15px;line-height:1.45}
+.feedback.ok{display:block;background:#eaf8ea;border-left:6px solid var(--ok)}
+.feedback.warn{display:block;background:var(--advertencia);border-left:6px solid #d89b00}
+.feedback.bad{display:block;background:#fdeaea;border-left:6px solid var(--error)}
+.action{display:none;margin-top:14px;background:var(--negro);color:#fff;border:none;padding:12px 20px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer}
+.action.show{display:inline-block}
+.result{background:var(--negro);border-radius:18px;padding:26px;color:#fff}
+.result .eyebrow{margin:0 0 8px;color:var(--azul-medio);font-size:13px;letter-spacing:3px;text-transform:uppercase;font-weight:800}
+.result h2{margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:34px;line-height:1.1;color:#fff;font-weight:700}
+.result p{margin:0;font-size:17px;line-height:1.55;color:#f2f2f2}
+.nextbox{margin-top:18px;padding:16px;background:var(--azul);color:#fff;border-radius:14px}
+.nextbox p,.nextbox strong{color:#fff}
+.reset{display:inline-flex;align-items:center;gap:8px;margin-top:18px;background:#fff;color:var(--negro);border:2px solid var(--azul);padding:12px 20px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer}
+@media(max-width:760px){
+  .intro-grid{grid-template-columns:1fr}
+  .hero h1{font-size:36px}
+  .question-title{font-size:22px}
+  .quiz-area,.intro,.progress-wrap{padding-left:18px;padding-right:18px}
+  .hero{padding-left:18px;padding-right:18px}
+}
+</style>
+</head>
+<body>
+<div id="quizRatiosFinancieros" class="wrap">
+  <div class="hero">
+    <p class="eyebrow">Análisis e Interpretación de los EE.FF. / Semana 06</p>
+    <h1>Quiz interactivo:<br>Liquidez y rentabilidad</h1>
+    <p class="sub">Interpreta los indicadores y reconoce qué señales financieras revelan.</p>
+  </div>
+
+  <div class="intro">
+    <div class="intro-grid">
+      <div>
+        <h2>Responde, recibe retroalimentación y fortalece tu diagnóstico financiero.</h2>
+        <p>Selecciona una alternativa por pregunta. Si te equivocas, recibirás una pista y tendrás una segunda oportunidad antes de continuar.</p>
+      </div>
+      <div class="instruccion">
+        <p class="label">Instrucción</p>
+        <p><strong>Elige</strong> la respuesta correcta para avanzar al siguiente reto.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-bg"><div id="barraProgreso" class="progress"></div></div>
+    <p id="contadorQuiz" class="contador">Pregunta 1 de 8</p>
+  </div>
+
+  <div class="quiz-area"><div id="quizContent"></div></div>
+</div>
+
+<script>
+const preguntas = [
+  {
+    meta:"Liquidez general",
+    icon:"target",
+    pregunta:"Una empresa presenta un activo corriente de S/ 180,000 y un pasivo corriente de S/ 120,000. ¿Cuál es su liquidez general?",
+    opciones:["0.67","1.00","1.50","2.50"],
+    correcta:2,
+    ok:"La liquidez general es 180,000 ÷ 120,000 = 1.50. La empresa dispone de S/ 1.50 en activos corrientes por cada sol de deuda corriente.",
+    pista:"Divide el activo corriente entre el pasivo corriente."
+  },
+  {
+    meta:"Prueba ácida",
+    icon:"image",
+    pregunta:"¿Por qué la prueba ácida excluye los inventarios?",
+    opciones:["Porque los inventarios siempre generan pérdidas.","Porque pueden tardar en convertirse en efectivo.","Porque no forman parte del activo corriente.","Porque solo se utilizan en empresas industriales."],
+    correcta:1,
+    ok:"La prueba ácida excluye los inventarios porque pueden requerir más tiempo para convertirse en efectivo.",
+    pista:"Piensa en la rapidez con la que una cuenta puede utilizarse para pagar obligaciones."
+  },
+  {
+    meta:"Liquidez de caja",
+    icon:"camera",
+    pregunta:"¿Qué ratio evalúa la capacidad de pago más inmediata de una empresa?",
+    opciones:["ROE.","Liquidez general.","Liquidez de caja.","Margen neto."],
+    correcta:2,
+    ok:"La liquidez de caja considera únicamente efectivo y equivalentes frente al pasivo corriente.",
+    pista:"Busca el indicador que utiliza solamente los recursos monetarios disponibles."
+  },
+  {
+    meta:"Capital de trabajo",
+    icon:"link",
+    pregunta:"Si una empresa tiene activo corriente de S/ 95,000 y pasivo corriente de S/ 70,000, ¿cuál es su capital de trabajo?",
+    opciones:["S/ 25,000","S/ 70,000","S/ 95,000","S/ 165,000"],
+    correcta:0,
+    ok:"El capital de trabajo es S/ 95,000 – S/ 70,000 = S/ 25,000.",
+    pista:"Resta el pasivo corriente al activo corriente."
+  },
+  {
+    meta:"ROE",
+    icon:"user",
+    pregunta:"¿Qué información proporciona principalmente el ROE?",
+    opciones:["La capacidad de pagar obligaciones inmediatas.","La rentabilidad generada sobre el patrimonio.","La velocidad de rotación del inventario.","La proporción de efectivo disponible."],
+    correcta:1,
+    ok:"El ROE mide la utilidad generada en relación con el patrimonio aportado por los propietarios.",
+    pista:"Relaciona el indicador con el rendimiento obtenido por los accionistas o propietarios."
+  },
+  {
+    meta:"ROI",
+    icon:"spark",
+    pregunta:"Una empresa invierte S/ 50,000 y obtiene una ganancia de S/ 7,500. ¿Cuál es su ROI?",
+    opciones:["7.5%","10%","15%","50%"],
+    correcta:2,
+    ok:"El ROI es 7,500 ÷ 50,000 × 100 = 15%.",
+    pista:"Divide la ganancia obtenida entre la inversión realizada y multiplica por 100."
+  },
+  {
+    meta:"Interpretación conjunta",
+    icon:"check",
+    pregunta:"¿Qué situación representa mejor a una empresa con alta rentabilidad, pero baja liquidez?",
+    opciones:["Tiene buenos resultados, pero puede presentar dificultades para pagar obligaciones inmediatas.","Tiene exceso de efectivo y baja eficiencia.","No genera utilidad y tampoco tiene activos.","No necesita revisar sus cuentas por cobrar."],
+    correcta:0,
+    ok:"Una empresa puede ser rentable y, al mismo tiempo, enfrentar problemas de caja si no dispone de efectivo suficiente.",
+    pista:"Diferencia entre generar utilidad y contar con dinero disponible para pagar."
+  },
+  {
+    meta:"Diagnóstico financiero",
+    icon:"map",
+    pregunta:"¿Cuál es la mejor forma de interpretar un ratio financiero?",
+    opciones:["Analizarlo de manera aislada.","Compararlo únicamente con un valor ideal universal.","Relacionarlo con periodos anteriores, el sector y otras cuentas.","Aceptar automáticamente la interpretación de una herramienta de IA."],
+    correcta:2,
+    ok:"Un ratio debe analizarse con contexto histórico, sectorial y en relación con otros indicadores y cuentas.",
+    pista:"Busca la alternativa que considere contexto, comparación y evidencia."
+  }
+];
+
+let actual=0,puntaje=0,intentos=0,respondida=false;
+
+function iconSVG(type){
+  const base='width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="icon"';
+  const icons={
+    target:`<svg ${base}><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path></svg>`,
+    user:`<svg ${base}><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.6-4.2 4.3-6 8-6s6.4 1.8 8 6"></path></svg>`,
+    image:`<svg ${base}><rect x="4" y="5" width="16" height="14" rx="2"></rect><circle cx="9" cy="10" r="1.5"></circle><path d="M4 16l4-4 4 4 3-3 5 5"></path></svg>`,
+    link:`<svg ${base}><path d="M10 13a5 5 0 0 0 7.1 0l1.4-1.4a5 5 0 0 0-7.1-7.1L10.5 5"></path><path d="M14 11a5 5 0 0 0-7.1 0L5.5 12.4a5 5 0 0 0 7.1 7.1l.9-.9"></path></svg>`,
+    check:`<svg ${base}><path d="M20 6L9 17l-5-5"></path><path d="M3 20h18"></path></svg>`,
+    camera:`<svg ${base}><path d="M4 7h4l2-3h4l2 3h4v13H4z"></path><circle cx="12" cy="13" r="4"></circle></svg>`,
+    spark:`<svg ${base}><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"></path><path d="M19 15l1 2 2 1-2 1-1 2-1-2-2-1 2-1z"></path></svg>`,
+    map:`<svg ${base}><path d="M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3z"></path><path d="M9 3v15M15 6v15"></path></svg>`
+  };
+  return icons[type]||icons.target;
+}
+
+function renderPregunta(){
+  respondida=false;
+  intentos=0;
+  const p=preguntas[actual];
+  const num=String(actual+1).padStart(2,"0");
+  document.getElementById("barraProgreso").style.width=((actual+1)/preguntas.length*100)+"%";
+  document.getElementById("contadorQuiz").textContent=`Pregunta ${actual+1} de ${preguntas.length}`;
+  const opciones=p.opciones.map((op,i)=>`<button class="option" type="button" onclick="responder(${i})">${String.fromCharCode(65+i)}. ${op}</button>`).join("");
+  document.getElementById("quizContent").innerHTML=`
+  <div class="card"><div class="card-inner">
+    <div class="question-head">
+      <div><div class="numero">${num}</div></div>
+      <div>${iconSVG(p.icon)}<p class="meta">${p.meta}</p><h3 class="question-title">${p.pregunta}</h3></div>
+    </div>
+    <div class="options">${opciones}</div>
+    <div id="feedback" class="feedback"></div>
+    <button id="btnNext" class="action" type="button" onclick="siguiente()">${actual===preguntas.length-1?"Ver resultado":"Siguiente pregunta"}</button>
+  </div></div>`;
+}
+
+function responder(indice){
+  if(respondida)return;
+  const p=preguntas[actual];
+  const feedback=document.getElementById("feedback");
+  intentos++;
+  if(indice===p.correcta){
+    respondida=true;
+    puntaje++;
+    feedback.className="feedback ok";
+    feedback.innerHTML=`<strong>Respuesta correcta:</strong> ${p.ok}`;
+    bloquearOpciones();
+    document.getElementById("btnNext").classList.add("show");
+  }else if(intentos<2){
+    feedback.className="feedback warn";
+    feedback.innerHTML=`<strong>Inténtalo nuevamente:</strong> ${p.pista}`;
+  }else{
+    respondida=true;
+    feedback.className="feedback bad";
+    feedback.innerHTML=`<strong>Retroalimentación:</strong> ${p.ok}`;
+    bloquearOpciones();
+    document.getElementById("btnNext").classList.add("show");
+  }
+}
+
+function bloquearOpciones(){
+  document.querySelectorAll(".option").forEach(btn=>{
+    btn.disabled=true;
+    btn.style.cursor="default";
+    btn.style.opacity=".75";
+  });
+}
+
+function siguiente(){
+  if(actual<preguntas.length-1){
+    actual++;
+    renderPregunta();
+    mantenerVista();
+  }else{
+    renderResultado();
+    mantenerVista();
+  }
+}
+
+function renderResultado(){
+  document.getElementById("barraProgreso").style.width="100%";
+  document.getElementById("contadorQuiz").textContent="Quiz completado";
+  let mensaje="";
+  if(puntaje>=7) mensaje="Has demostrado una comprensión sólida de los ratios de liquidez y rentabilidad.";
+  else if(puntaje>=5) mensaje="Has logrado una comprensión adecuada. Revisa las interpretaciones donde tuviste dificultad.";
+  else mensaje="Conviene repasar las fórmulas y, especialmente, la interpretación conjunta de los indicadores.";
+  document.getElementById("quizContent").innerHTML=`
+  <div class="result">
+    <p class="eyebrow">Resultado</p>
+    <h2>¡Quiz completado!</h2>
+    <p>Puntaje obtenido: <strong>${puntaje} de ${preguntas.length}</strong>. ${mensaje}</p>
+    <div class="nextbox"><p style="margin:0;font-size:16px;line-height:1.5;"><strong>Siguiente paso:</strong> aplica estos criterios en la ficha de interpretación de ratios y utiliza evidencias numéricas para preparar el diagnóstico financiero de la EA2.</p></div>
+    <button class="reset" type="button" onclick="reiniciarQuiz()">Reiniciar cuestionario</button>
+  </div>`;
+}
+
+function reiniciarQuiz(){
+  actual=0;puntaje=0;intentos=0;respondida=false;
+  renderPregunta();
+  mantenerVista();
+}
+
+function mantenerVista(){
+  const area=document.getElementById("contadorQuiz");
+  if(area)area.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+renderPregunta();
+</script>
+</body>
+</html>
